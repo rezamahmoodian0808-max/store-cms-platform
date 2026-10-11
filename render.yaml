@@ -2,6 +2,7 @@ services:
   - type: web
     name: store-cms-platform
     env: python
+    plan: free
     buildCommand: pip install -r requirements.txt && python seed.py
     startCommand: python run.py
     envVars:
