@@ -1,0 +1,112 @@
+{% extends "admin/base.html" %}
+
+{% block admin_content %}
+<div class="space-y-8 max-w-5xl mx-auto">
+    
+    <div>
+        <h2 class="text-xl font-bold text-slate-900">مدیریت فهرست‌ها و لینک‌های سایت</h2>
+        <p class="text-xs text-slate-500 mt-1">تنظیم پیوندهای منوی هدر (بالای سایت) و فوتر (پایین سایت)</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Add Menu Item Form (1 col) -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-4">
+            <h3 class="text-sm font-bold text-slate-900 border-r-4 border-blue-600 pr-2">افزودن لینک جدید به منو</h3>
+
+            <form action="/admin/menus/save" method="post" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">موقعیت منو</label>
+                    <select name="location" class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50">
+                        <option value="header">منوی اصلی هدر (Header)</option>
+                        <option value="footer">منوی پاورقی (Footer)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">عنوان پیوند (Label) *</label>
+                    <input type="text" name="label" required placeholder="مثال: راهنمای خرید"
+                           class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">آدرس اینترنتی (URL) *</label>
+                    <input type="text" name="url" required placeholder="/page/guide یا https://..."
+                           class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50" dir="ltr">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">ترتیب نمایش (Sort Order)</label>
+                    <input type="number" name="sort_order" value="0"
+                           class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50">
+                </div>
+
+                <div>
+                    <label class="inline-flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700">
+                        <input type="checkbox" name="is_new_tab" value="1" class="w-4 h-4 rounded text-blue-600">
+                        <span>باز شدن در برگه جدید (Target Blank)</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="w-full py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 shadow-sm flex items-center justify-center gap-2">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span>افزودن به منو</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Menu Lists (2 cols) -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Header Links -->
+            <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
+                <h3 class="text-sm font-bold text-slate-900 border-r-4 border-blue-600 pr-2 mb-4">آیتم‌های منوی هدر (Header)</h3>
+                <div class="divide-y divide-slate-100 text-xs">
+                    {% for item in header_items %}
+                    <div class="py-2.5 flex items-center justify-between">
+                        <div>
+                            <strong class="font-bold text-slate-800 text-sm">{{ item.label }}</strong>
+                            <span class="text-slate-400 font-mono block mt-0.5" dir="ltr">{{ item.url }}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-slate-400 font-mono">ترتیب: {{ item.sort_order }}</span>
+                            <form action="/admin/menus/{{ item.id }}/delete" method="post" class="inline" onsubmit="return confirm('حذف این آیتم از منو؟');">
+                                <button type="submit" class="text-rose-600 hover:text-rose-800 p-1">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Footer Links -->
+            <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
+                <h3 class="text-sm font-bold text-slate-900 border-r-4 border-blue-600 pr-2 mb-4">آیتم‌های منوی فوتر (Footer)</h3>
+                <div class="divide-y divide-slate-100 text-xs">
+                    {% for item in footer_items %}
+                    <div class="py-2.5 flex items-center justify-between">
+                        <div>
+                            <strong class="font-bold text-slate-800 text-sm">{{ item.label }}</strong>
+                            <span class="text-slate-400 font-mono block mt-0.5" dir="ltr">{{ item.url }}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-slate-400 font-mono">ترتیب: {{ item.sort_order }}</span>
+                            <form action="/admin/menus/{{ item.id }}/delete" method="post" class="inline" onsubmit="return confirm('حذف این آیتم از منو؟');">
+                                <button type="submit" class="text-rose-600 hover:text-rose-800 p-1">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

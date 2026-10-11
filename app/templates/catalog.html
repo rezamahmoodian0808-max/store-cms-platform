@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-white border-b border-slate-100 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <nav class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+                    <a href="/" class="hover:text-blue-600">صفحه اصلی</a>
+                    <span>/</span>
+                    <span class="text-slate-800 font-semibold">فروشگاه</span>
+                    {% if selected_category %}
+                    <span>/</span>
+                    <span class="text-blue-600 font-semibold">{{ selected_category }}</span>
+                    {% endif %}
+                </nav>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">کاتالوگ و لیست محصولات</h1>
+            </div>
+            <div>
+                <span class="text-xs text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full font-medium">
+                    تعداد نتایج: {{ total_results }} کالا
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10" x-data="{ mobileFiltersOpen: false }">
+    <!-- Mobile Filter & Sort Bar -->
+    <div class="lg:hidden mb-6 flex items-center gap-3">
+        <button type="button" 
+                @click="mobileFiltersOpen = !mobileFiltersOpen"
+                class="flex-1 py-2.5 px-4 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 flex items-center justify-center gap-2 shadow-sm">
+            <i data-lucide="sliders-horizontal" class="w-4 h-4 text-blue-600"></i>
+            <span>فیلتر و دسته‌بندی‌ها</span>
+            {% if selected_category %}
+            <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+            {% endif %}
+        </button>
+
+        <form action="/catalog" method="get" class="w-1/2">
+            {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+            {% if search_query %}<input type="hidden" name="q" value="{{ search_query }}">{% endif %}
+            <select name="sort" onchange="this.form.submit()" class="w-full py-2.5 px-3 rounded-xl border border-slate-200 text-xs bg-white text-slate-700 font-medium shadow-sm focus:border-blue-600">
+                <option value="newest" {% if selected_sort == 'newest' %}selected{% endif %}>جدیدترین</option>
+                <option value="price_asc" {% if selected_sort == 'price_asc' %}selected{% endif %}>ارزان‌ترین</option>
+                <option value="price_desc" {% if selected_sort == 'price_desc' %}selected{% endif %}>گران‌ترین</option>
+            </select>
+        </form>
+    </div>
+
+    <!-- Quick Category Horizontal Pills for Mobile -->
+    <div class="lg:hidden flex gap-2 overflow-x-auto pb-3 mb-6 text-xs">
+        <a href="/catalog{% if search_query %}?q={{ search_query }}{% endif %}" 
+           class="px-3.5 py-2 rounded-full whitespace-nowrap font-medium transition-colors {% if not selected_category %}bg-blue-600 text-white font-bold{% else %}bg-white border border-slate-200 text-slate-700{% endif %}">
+            همه
+        </a>
+        {% for cat in categories %}
+        <a href="/catalog?category={{ cat.slug }}{% if search_query %}&q={{ search_query }}{% endif %}" 
+           class="px-3.5 py-2 rounded-full whitespace-nowrap font-medium transition-colors {% if selected_category == cat.slug or selected_category == cat.name %}bg-blue-600 text-white font-bold{% else %}bg-white border border-slate-200 text-slate-700{% endif %}">
+            {{ cat.name }}
+        </a>
+        {% endfor %}
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        <!-- Filters Sidebar (Desktop: always visible, Mobile: toggled) -->
+        <aside class="space-y-6" :class="mobileFiltersOpen ? 'block' : 'hidden lg:block'">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                <h3 class="font-bold text-slate-900 text-sm mb-4 border-r-4 border-blue-600 pr-2">دسته‌بندی‌ها</h3>
+                <ul class="space-y-1.5 text-sm">
+                    <li>
+                        <a href="/catalog{% if search_query %}?q={{ search_query }}{% endif %}" 
+                           class="flex justify-between items-center py-2 px-3 rounded-xl transition-colors {% if not selected_category %}bg-blue-50 text-blue-700 font-bold{% else %}text-slate-600 hover:bg-slate-50{% endif %}">
+                            <span>همه محصولات</span>
+                        </a>
+                    </li>
+                    {% for cat in categories %}
+                    <li>
+                        <a href="/catalog?category={{ cat.slug }}{% if search_query %}&q={{ search_query }}{% endif %}" 
+                           class="flex justify-between items-center py-2 px-3 rounded-xl transition-colors {% if selected_category == cat.slug or selected_category == cat.name %}bg-blue-50 text-blue-700 font-bold{% else %}text-slate-600 hover:bg-slate-50{% endif %}">
+                            <span>{{ cat.name }}</span>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Sort By Box (Desktop) -->
+            <div class="hidden lg:block bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                <h3 class="font-bold text-slate-900 text-sm mb-4 border-r-4 border-blue-600 pr-2">مرتب‌سازی</h3>
+                <form action="/catalog" method="get" class="space-y-2">
+                    {% if selected_category %}
+                    <input type="hidden" name="category" value="{{ selected_category }}">
+                    {% endif %}
+                    {% if search_query %}
+                    <input type="hidden" name="q" value="{{ search_query }}">
+                    {% endif %}
+                    <select name="sort" onchange="this.form.submit()" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm bg-slate-50 focus:border-blue-600">
+                        <option value="newest" {% if selected_sort == 'newest' %}selected{% endif %}>جدیدترین محصولات</option>
+                        <option value="price_asc" {% if selected_sort == 'price_asc' %}selected{% endif %}>ارزان‌ترین به گران‌ترین</option>
+                        <option value="price_desc" {% if selected_sort == 'price_desc' %}selected{% endif %}>گران‌ترین به ارزان‌ترین</option>
+                    </select>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Product Grid -->
+        <div class="lg:col-span-3">
+            {% if search_query %}
+            <div class="mb-6 p-4 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-between">
+                <span class="text-xs text-blue-900">
+                    نتایج جستجو برای: <strong class="font-bold">"{{ search_query }}"</strong>
+                </span>
+                <a href="/catalog" class="text-xs text-blue-600 font-bold hover:underline">حذف فیلتر جستجو</a>
+            </div>
+            {% endif %}
+
+            {% if products|length == 0 %}
+            <div class="text-center py-16 bg-white rounded-2xl border border-slate-200 p-8">
+                <i data-lucide="package-search" class="w-16 h-16 text-slate-300 mx-auto mb-4 stroke-1"></i>
+                <h3 class="text-base font-bold text-slate-700">هیچ محصولی با این مشخصات یافت نشد</h3>
+                <p class="text-xs text-slate-500 mt-1">لطفاً فیلترهای اعمال شده یا عبارت جستجو را تغییر دهید.</p>
+                <a href="/catalog" class="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold">نمایش همه محصولات</a>
+            </div>
+            {% else %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for p in products %}
+                <div class="product-card bg-white rounded-2xl border border-slate-200/80 overflow-hidden flex flex-col group shadow-sm hover:shadow-md transition-all">
+                    
+                    <!-- Product Image -->
+                    <div class="relative bg-slate-50 aspect-square overflow-hidden border-b border-slate-100">
+                        <img src="{{ p.featured_image or 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=500' }}" 
+                             alt="{{ p.title }}" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        
+                        <!-- Badges -->
+                        <div class="absolute top-3 right-3 flex flex-col gap-1 items-end">
+                            {% if p.has_priority_system and settings.global_enable_priority == "1" %}
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white shadow-sm flex items-center gap-1">
+                                <i data-lucide="list-ordered" class="w-3 h-3"></i>
+                                سیستم اولویت
+                            </span>
+                            {% endif %}
+                            {% if p.has_color_variants and settings.global_enable_color_variants == "1" %}
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-600 text-white shadow-sm flex items-center gap-1">
+                                <i data-lucide="palette" class="w-3 h-3"></i>
+                                پالت رنگ
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Details -->
+                    <div class="p-5 flex-1 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs text-slate-500 block mb-1">{{ p.category_name or 'نوشت‌افزار' }}</span>
+                            <h3 class="font-bold text-slate-800 text-sm leading-snug line-clamp-2 hover:text-blue-600 transition-colors">
+                                <a href="/product/{{ p.slug }}">{{ p.title }}</a>
+                            </h3>
+                            {% if p.sku %}
+                            <span class="text-[11px] text-slate-400 mt-1 block font-mono">کد کالا: {{ p.sku }}</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                            <div>
+                                {% if p.compare_at_price %}
+                                <span class="text-xs text-slate-400 line-through block">{{ format_price(p.compare_at_price, settings.currency) }}</span>
+                                {% endif %}
+                                <span class="font-extrabold text-blue-600 text-sm">{{ format_price(p.price, settings.currency) }}</span>
+                            </div>
+                            <a href="/product/{{ p.slug }}" class="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 font-bold text-xs hover:bg-blue-600 hover:text-white transition-colors">
+                                انتخاب و خرید
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

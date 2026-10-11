@@ -1,0 +1,26 @@
+import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env file
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
+
+class Settings:
+    APP_ENV: str = os.getenv("APP_ENV", "production")
+    DEBUG: bool = APP_ENV.lower() == "development"
+    HOST: str = os.getenv("HOST", "0.0.0.0")
+    PORT: int = int(os.getenv("PORT", "8000"))
+    SITE_URL: str = os.getenv("SITE_URL", "http://localhost:8000").rstrip("/")
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "prod-secret-key-antigravity-secure-seed-983141")
+    DATABASE_PATH: str = str(BASE_DIR / os.getenv("DATABASE_PATH", "app.db"))
+    FORCE_HTTPS: bool = os.getenv("FORCE_HTTPS", "false").lower() in ("true", "1", "yes")
+
+    ADMIN_EMAIL: str = os.getenv("ADMIN_EMAIL", "admin@example.com")
+    ADMIN_PASSWORD: str = os.getenv("ADMIN_PASSWORD", "admin123456")
+    ADMIN_NAME: str = os.getenv("ADMIN_NAME", "Site Administrator")
+
+    UPLOAD_DIR: Path = BASE_DIR / "app" / "static" / "uploads"
+
+settings = Settings()
+settings.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)

@@ -1,0 +1,115 @@
+{% extends "admin/base.html" %}
+
+{% block admin_content %}
+<div class="space-y-6">
+    
+    <!-- Top Bar -->
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <h2 class="text-xl font-bold text-slate-900">کاتالوگ محصولات</h2>
+            <p class="text-xs text-slate-500 mt-1">مدیریت کلیه کالاها، تنظیمات اولویت سفارش و پالت‌های رنگی</p>
+        </div>
+        <a href="/admin/products/new" class="px-4 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 shadow-sm transition-colors flex items-center gap-2">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            افزودن محصول جدید
+        </a>
+    </div>
+
+    <!-- Products Table -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-right text-xs">
+                <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
+                    <tr>
+                        <th class="py-3.5 px-4 font-bold">تصویر</th>
+                        <th class="py-3.5 px-4 font-bold">عنوان محصول و کد SKU</th>
+                        <th class="py-3.5 px-4 font-bold">دسته‌بندی</th>
+                        <th class="py-3.5 px-4 font-bold">قیمت</th>
+                        <th class="py-3.5 px-4 font-bold">موجودی</th>
+                        <th class="py-3.5 px-4 font-bold">ویژگی‌های مدولار</th>
+                        <th class="py-3.5 px-4 font-bold">وضعیت انتشار</th>
+                        <th class="py-3.5 px-4 font-bold text-left">عملیات</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for p in products %}
+                    <tr class="hover:bg-slate-50/70 transition-colors">
+                        <td class="py-3 px-4">
+                            <img src="{{ p.featured_image or 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=100' }}" 
+                                 class="w-12 h-12 rounded-xl object-cover border border-slate-200">
+                        </td>
+                        <td class="py-3 px-4">
+                            <a href="/admin/products/{{ p.id }}/edit" class="font-bold text-slate-900 hover:text-blue-600 block text-sm">
+                                {{ p.title }}
+                            </a>
+                            <span class="text-slate-400 font-mono text-[11px]">کد: {{ p.sku or '---' }} | اسلاگ: {{ p.slug }}</span>
+                        </td>
+                        <td class="py-3 px-4 text-slate-600">
+                            {{ p.category_name or 'عمومی' }}
+                        </td>
+                        <td class="py-3 px-4 font-extrabold text-blue-600">
+                            {{ format_price(p.price, settings.currency) }}
+                        </td>
+                        <td class="py-3 px-4">
+                            {% if p.stock_quantity > 0 %}
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                                {{ p.stock_quantity }} عدد
+                            </span>
+                            {% else %}
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">ناموجود</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-4">
+                            <div class="flex flex-wrap gap-1">
+                                {% if p.has_priority_system %}
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800" title="سیستم اولویت فعال است">
+                                    ✓ اولویت ({{ p.priority_options|length }})
+                                </span>
+                                {% endif %}
+                                {% if p.has_color_variants %}
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800" title="پالت رنگ فعال است">
+                                    ✓ رنگ ({{ p.color_variants|length }})
+                                </span>
+                                {% endif %}
+                                {% if not p.has_priority_system and not p.has_color_variants %}
+                                <span class="text-slate-400 text-[11px]">محصول ساده</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="py-3 px-4">
+                            {% if p.is_published %}
+                            <span class="inline-flex items-center gap-1 text-emerald-600 font-bold">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                منتشر شده
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center gap-1 text-slate-400 font-semibold">
+                                <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                                پیش‌نویس
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-4 text-left">
+                            <div class="flex items-center justify-end gap-2">
+                                <a href="/product/{{ p.slug }}" target="_blank" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700" title="مشاهده در سایت">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </a>
+                                <a href="/admin/products/{{ p.id }}/edit" class="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50" title="ویرایش">
+                                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                </a>
+                                <form action="/admin/products/{{ p.id }}/delete" method="post" class="inline" onsubmit="return confirm('آیا از حذف این محصول اطمینان دارید؟');">
+                                    <button type="submit" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50" title="حذف">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

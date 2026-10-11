@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.exe
+.pytest_cache/
+app.db
+app.db-wal
+app.db-shm
+.env
+upload_to_github.py

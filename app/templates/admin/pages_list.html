@@ -1,0 +1,111 @@
+{% extends "admin/base.html" %}
+
+{% block admin_content %}
+<div class="space-y-6">
+    
+    <!-- Top Bar -->
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <h2 class="text-xl font-bold text-slate-900">مدیریت برگه‌ها (صفحات داینامیک CMS)</h2>
+            <p class="text-xs text-slate-500 mt-1">
+                ساخت و ویرایش نامحدود صفحات، صفحات لندینگ شهری، راهنماها و مقالات (پشتیبانی تا بیش از ۱۰۰ صفحه)
+            </p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+            <!-- 100+ Pages Instant Generator Form -->
+            <form action="/admin/pages/bulk-generate" method="post" class="inline">
+                <input type="hidden" name="count" value="25">
+                <button type="submit" 
+                        class="px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-500 shadow-sm transition-colors flex items-center gap-2"
+                        onclick="return confirm('تولید خودکار ۲۵ برگه سئو و لندینگ آغاز شود؟');">
+                    <i data-lucide="layers" class="w-4 h-4"></i>
+                    تولید خودکار ۲۵ برگه سئو
+                </button>
+            </form>
+
+            <a href="/admin/pages/new" class="px-4 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 shadow-sm transition-colors flex items-center gap-2">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                افزودن برگه جدید
+            </a>
+        </div>
+    </div>
+
+    <!-- Status pill -->
+    <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                {{ total_pages }}
+            </div>
+            <div>
+                <span class="text-xs font-bold text-slate-800 block">مجموع برگه‌های ثبت شده در سیستم: {{ total_pages }} برگه</span>
+                <span class="text-[11px] text-slate-500">هر برگه دارای اسلاگ یکتا، متاتگ‌های سئو و آدرس مستقیم در ساختار <code>/page/slug</code> می‌باشد.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pages Table -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-right text-xs">
+                <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
+                    <tr>
+                        <th class="py-3.5 px-4 font-bold">ردیف</th>
+                        <th class="py-3.5 px-4 font-bold">عنوان برگه</th>
+                        <th class="py-3.5 px-4 font-bold">آدرس مستقیم (URL)</th>
+                        <th class="py-3.5 px-4 font-bold">قالب نمایشی</th>
+                        <th class="py-3.5 px-4 font-bold">وضعیت انتشار</th>
+                        <th class="py-3.5 px-4 font-bold text-left">عملیات</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for page in pages %}
+                    <tr class="hover:bg-slate-50/70 transition-colors">
+                        <td class="py-3 px-4 text-slate-400 font-mono">{{ loop.index }}</td>
+                        <td class="py-3 px-4 font-bold text-slate-800 text-sm">
+                            <a href="/admin/pages/{{ page.id }}/edit" class="hover:text-blue-600">
+                                {{ page.title }}
+                            </a>
+                        </td>
+                        <td class="py-3 px-4 font-mono text-slate-500" dir="ltr">
+                            /page/{{ page.slug }}
+                        </td>
+                        <td class="py-3 px-4 text-slate-600">
+                            {{ page.template_type }}
+                        </td>
+                        <td class="py-3 px-4">
+                            {% if page.is_published %}
+                            <span class="inline-flex items-center gap-1 text-emerald-600 font-bold">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                فعال
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center gap-1 text-slate-400 font-semibold">
+                                <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                                پیش‌نویس
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-4 text-left">
+                            <div class="flex items-center justify-end gap-2">
+                                <a href="/page/{{ page.slug }}" target="_blank" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700" title="مشاهده">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </a>
+                                <a href="/admin/pages/{{ page.id }}/edit" class="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50" title="ویرایش">
+                                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                </a>
+                                <form action="/admin/pages/{{ page.id }}/delete" method="post" class="inline" onsubmit="return confirm('آیا از حذف این برگه اطمینان دارید؟');">
+                                    <button type="submit" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50" title="حذف">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

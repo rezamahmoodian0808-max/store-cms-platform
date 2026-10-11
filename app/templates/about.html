@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-gradient-to-b from-blue-50/50 to-white py-12 border-b border-slate-100 text-center">
+    <div class="max-w-4xl mx-auto px-4">
+        <span class="text-xs font-bold text-blue-600 uppercase tracking-widest block mb-2">شناخت بیشتر مجموعه</span>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 leading-tight">درباره ما و رسالت ما</h1>
+        <p class="text-base text-slate-600 mt-3 max-w-2xl mx-auto leading-relaxed">
+            تامین تخصصی انواع نوشت‌افزار، لوازم التحریر اداری و ملزومات حرفه‌ای با بالاترین استاندارد کیفی و خدمات پیشرو.
+        </p>
+    </div>
+</div>
+
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+    
+    <!-- Story Card -->
+    <div class="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200/80 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+        <div class="space-y-4 text-slate-700 leading-relaxed text-sm">
+            <h2 class="text-xl font-bold text-slate-900 border-r-4 border-blue-600 pr-3">داستان شکل‌گیری فروشگاه</h2>
+            <p>
+                مجموعه ما با هدف پر کردن خلاء دسترسی آسان و سریع به نوشت‌افزارهای استاندارد، ارگونومیک و اصیل فعالیت خود را آغاز نمود. ما باور داریم ابزارهای نوشتن و ترسیم تنها یک وسیله ساده نیستند؛ بلکه همراه خلاقیت، تحصیل و بهره‌وری روزمره شما هستند.
+            </p>
+            <p>
+                با بهره‌گیری از سیستم نوین فروش آنلاین، برای نخستین بار قابلیت هوشمند تعیین اولویت انتخاب کالا و تنوع دقیق رنگی را فراهم ساخته‌ایم تا مشتریان ما دقیقا همان انتخابی را تحویل بگیرند که مدنظر دارند.
+            </p>
+        </div>
+        <div class="rounded-2xl overflow-hidden aspect-video shadow-md">
+            <img src="https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?auto=format&fit=crop&w=700&q=80" 
+                 alt="فروشگاه ما" class="w-full h-full object-cover">
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <span class="text-3xl font-extrabold text-blue-600 block">+۱۰</span>
+            <span class="text-xs text-slate-500 mt-1 block">سال سابقه تخصصی</span>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <span class="text-3xl font-extrabold text-blue-600 block">+۵۰,۰۰۰</span>
+            <span class="text-xs text-slate-500 mt-1 block">سفارش موفق تحویل شده</span>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <span class="text-3xl font-extrabold text-blue-600 block">+۱۰۰</span>
+            <span class="text-xs text-slate-500 mt-1 block">شهر تحت پوشش ارسال</span>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <span class="text-3xl font-extrabold text-blue-600 block">۱۰۰٪</span>
+            <span class="text-xs text-slate-500 mt-1 block">ضمانت اصالت و سلامت</span>
+        </div>
+    </div>
+
+    <!-- Values -->
+    <div class="bg-slate-900 text-white rounded-3xl p-8 sm:p-12 shadow-xl">
+        <h3 class="text-2xl font-bold mb-6 text-center">اصول و تعهدات بنیادین ما</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center text-slate-300 text-sm">
+            <div class="space-y-2">
+                <div class="w-12 h-12 bg-blue-600 rounded-xl mx-auto flex items-center justify-center text-white mb-3">
+                    <i data-lucide="shield-check" class="w-6 h-6"></i>
+                </div>
+                <h4 class="font-bold text-white text-base">اصالت بدون مصالحه</h4>
+                <p class="text-xs text-slate-400">تمام اقلام موجود در انبار ما از نمایندگان رسمی و با هولوگرام معتبر تامین می‌گردند.</p>
+            </div>
+            <div class="space-y-2">
+                <div class="w-12 h-12 bg-blue-600 rounded-xl mx-auto flex items-center justify-center text-white mb-3">
+                    <i data-lucide="sparkles" class="w-6 h-6"></i>
+                </div>
+                <h4 class="font-bold text-white text-base">ارگونومی و سلامت</h4>
+                <p class="text-xs text-slate-400">توجه ویژه به طراحی ارگونومیک قلم‌ها و متریال ضدحساسیت بدنه تراش‌ها و مدادها.</p>
+            </div>
+            <div class="space-y-2">
+                <div class="w-12 h-12 bg-blue-600 rounded-xl mx-auto flex items-center justify-center text-white mb-3">
+                    <i data-lucide="headphones" class="w-6 h-6"></i>
+                </div>
+                <h4 class="font-bold text-white text-base">پاسخگویی سریع</h4>
+                <p class="text-xs text-slate-400">تیم پشتیبانی ما همواره در دسترس است تا قبل و بعد از خرید بهترین مشاوره را ارائه دهد.</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

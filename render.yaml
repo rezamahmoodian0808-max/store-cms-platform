@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: store-cms-platform
+    env: python
+    buildCommand: pip install -r requirements.txt && python seed.py
+    startCommand: python run.py
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: FORCE_HTTPS
+        value: "true"
+      - key: SECRET_KEY
+        generateValue: true

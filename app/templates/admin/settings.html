@@ -1,0 +1,161 @@
+{% extends "admin/base.html" %}
+
+{% block admin_content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    
+    <div>
+        <h2 class="text-xl font-bold text-slate-900">تنظیمات اصلی و کلیدهای سراسری سایت</h2>
+        <p class="text-xs text-slate-500 mt-1">مدیریت برندینگ، اطلاعات تماس، واحد پول و فعال/غیرفعال‌سازی سراسری قابلیت‌ها</p>
+    </div>
+
+    {% if saved %}
+    <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2">
+        <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600"></i>
+        <span>تنظیمات با موفقیت ذخیره و اعمال گردیدند.</span>
+    </div>
+    {% endif %}
+
+    <form action="/admin/settings/save" method="post" class="space-y-6">
+        
+        <!-- Master Feature Toggles Card -->
+        <div class="bg-white rounded-2xl border-2 border-blue-200 p-6 sm:p-8 shadow-sm space-y-4">
+            <div class="border-b border-slate-100 pb-3">
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-widest block mb-1">کنترل مدولار قابلیت‌ها</span>
+                <h3 class="text-base font-bold text-slate-900">کلیدهای سراسری سیستم اولویت و پالت رنگ</h3>
+                <p class="text-xs text-slate-500 mt-0.5">امکان روشن یا خاموش کردن هریک از دو قابلیت به صورت سراسری در کل فروشگاه</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+                <!-- Global Priority Toggle -->
+                <div class="p-4 rounded-xl bg-amber-50/60 border border-amber-200 space-y-2">
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" name="global_enable_priority" value="1" 
+                               {% if settings.global_enable_priority == '1' %}checked{% endif %}
+                               class="w-5 h-5 rounded text-amber-600 focus:ring-amber-500">
+                        <span class="text-sm font-bold text-slate-900">فعال‌سازی سراسری سیستم اولویت</span>
+                    </label>
+                    <p class="text-[11px] text-slate-600 pr-8 leading-relaxed">
+                        در صورت غیرفعال بودن، فیلدهای اولویت ۱ و ۲ در هیچ محصولی نمایش داده نخواهند شد.
+                    </p>
+                </div>
+
+                <!-- Global Color Variants Toggle -->
+                <div class="p-4 rounded-xl bg-blue-50/60 border border-blue-200 space-y-2">
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" name="global_enable_color_variants" value="1" 
+                               {% if settings.global_enable_color_variants == '1' %}checked{% endif %}
+                               class="w-5 h-5 rounded text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm font-bold text-slate-900">فعال‌سازی سراسری پالت رنگ</span>
+                    </label>
+                    <p class="text-[11px] text-slate-600 pr-8 leading-relaxed">
+                        در صورت غیرفعال بودن، سواچ‌های رنگی در صفحه محصول مخفی و به شکل ساده عمل می‌کنند.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Branding & Identity -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-8 shadow-sm space-y-4">
+            <h3 class="text-sm font-bold text-slate-900 border-r-4 border-blue-600 pr-2">هویت بصری و برندینگ</h3>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">نام برند / فروشگاه *</label>
+                    <input type="text" name="brand_name" required value="{{ settings.brand_name }}"
+                           class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">شعار برند (Tagline)</label>
+                    <input type="text" name="tagline" value="{{ settings.tagline }}"
+                           class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">آدرس آیکون فاویکون (Favicon)</label>
+                    <input type="text" name="favicon_url" value="{{ settings.favicon_url }}" placeholder="https://... یا /static/..."
+                           class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50" dir="ltr">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">آدرس تصویر لوگو</label>
+                    <input type="text" name="logo_url" value="{{ settings.logo_url }}" placeholder="https://... یا /static/..."
+                           class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50" dir="ltr">
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-8 shadow-sm space-y-4">
+            <h3 class="text-sm font-bold text-slate-900 border-r-4 border-blue-600 pr-2">اطلاعات تماس و پشتیبانی</h3>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">تلفن پشتیبانی</label>
+                    <input type="text" name="phone" value="{{ settings.phone }}"
+                           class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50 font-mono" dir="ltr">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">آدرس ایمیل</label>
+                    <input type="email" name="email" value="{{ settings.email }}"
+                           class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50 font-mono" dir="ltr">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1.5">آدرس پستی و موقعیت</label>
+                <input type="text" name="address" value="{{ settings.address }}"
+                       class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50">
+            </div>
+        </div>
+
+        <!-- Localization & Currency -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-8 shadow-sm space-y-4">
+            <h3 class="text-sm font-bold text-slate-900 border-r-4 border-blue-600 pr-2">واحد پول و زبان</h3>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">واحد پول نمایشی</label>
+                    <input type="text" name="currency" value="{{ settings.currency }}" placeholder="تومان"
+                           class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">زبان پیش‌فرض</label>
+                    <select name="default_lang" class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50">
+                        <option value="fa" {% if settings.default_lang == 'fa' %}selected{% endif %}>فارسی (Persian)</option>
+                        <option value="en" {% if settings.default_lang == 'en' %}selected{% endif %}>English</option>
+                    </select>
+                </div>
+                <div class="flex items-center pt-6">
+                    <label class="inline-flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700">
+                        <input type="checkbox" name="rtl_mode" value="1" {% if settings.rtl_mode == '1' %}checked{% endif %} class="w-4 h-4 rounded text-blue-600">
+                        <span>فعال‌سازی چیدمان راست‌چین (RTL)</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer texts -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-8 shadow-sm space-y-4">
+            <h3 class="text-sm font-bold text-slate-900 border-r-4 border-blue-600 pr-2">متن‌های فوتر</h3>
+            
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1.5">درباره فروشگاه در فوتر</label>
+                <textarea name="footer_about" rows="2" class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50">{{ settings.footer_about }}</textarea>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1.5">متن کپی‌رایت</label>
+                <input type="text" name="footer_copyright" value="{{ settings.footer_copyright }}"
+                       class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50">
+            </div>
+        </div>
+
+        <button type="submit" class="px-8 py-3 rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 shadow-md transition-colors flex items-center gap-2">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>ذخیره تمام تنظیمات</span>
+        </button>
+
+    </form>
+
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    restart: always
+    environment:
+      - APP_ENV=production
+      - HOST=0.0.0.0
+      - PORT=8000
+      - FORCE_HTTPS=true
+      - SECRET_KEY=replace-with-a-very-long-secret-key-min-32-chars
+    volumes:
+      - app_data:/app
+    ports:
+      - "8000:8000"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+
+volumes:
+  app_data:
+  caddy_data:
+  caddy_config:

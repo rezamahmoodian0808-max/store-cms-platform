@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-white border-b border-slate-100 py-4">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6">
+        <nav class="flex items-center gap-2 text-xs text-slate-500">
+            <a href="/" class="hover:text-blue-600">صفحه اصلی</a>
+            <span>/</span>
+            <a href="/blog" class="hover:text-blue-600">وبلاگ</a>
+            <span>/</span>
+            <span class="text-blue-600 font-semibold">{{ post.category }}</span>
+            <span>/</span>
+            <span class="text-slate-800 font-semibold truncate">{{ post.title }}</span>
+        </nav>
+    </div>
+</div>
+
+<article class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+    <div class="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/80 shadow-sm space-y-6">
+        
+        <!-- Header -->
+        <header class="space-y-4">
+            <div class="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-bold">{{ post.category }}</span>
+                <span>📅 {{ post.published_at[:10] }}</span>
+                <span>✍️ {{ post.author_name }}</span>
+                <span>👁️ {{ post.views_count }} بازدید</span>
+            </div>
+            
+            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight">
+                {{ post.title }}
+            </h1>
+
+            {% if post.excerpt %}
+            <p class="text-base text-slate-600 leading-relaxed font-medium bg-slate-50 p-4 rounded-xl border border-slate-100">
+                {{ post.excerpt }}
+            </p>
+            {% endif %}
+        </header>
+
+        <!-- Featured Image -->
+        {% if post.featured_image %}
+        <div class="rounded-2xl overflow-hidden aspect-video shadow-md border border-slate-100">
+            <img src="{{ post.featured_image }}" alt="{{ post.title }}" class="w-full h-full object-cover">
+        </div>
+        {% endif %}
+
+        <!-- Body Content -->
+        <div class="prose max-w-none text-slate-700 leading-loose text-base pt-4 border-t border-slate-100">
+            {{ post.content|safe }}
+        </div>
+
+        <!-- Tags -->
+        {% if tags_list and tags_list|length > 0 %}
+        <div class="pt-6 border-t border-slate-100 flex flex-wrap items-center gap-2">
+            <span class="text-xs font-bold text-slate-500">برچسب‌ها:</span>
+            {% for t in tags_list %}
+            <a href="/blog?tag={{ t }}" class="px-3 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                #{{ t }}
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+    </div>
+
+    <!-- Related Posts -->
+    {% if related_posts and related_posts|length > 0 %}
+    <div class="mt-12">
+        <h3 class="text-xl font-bold text-slate-900 mb-6 border-r-4 border-blue-600 pr-3">مقالات مرتبط</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {% for rp in related_posts %}
+            <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col">
+                <a href="/blog/{{ rp.slug }}" class="block aspect-video overflow-hidden">
+                    <img src="{{ rp.featured_image or 'https://images.unsplash.com/photo-1456735190829-80ab873514a9?w=500' }}" 
+                         alt="{{ rp.title }}" class="w-full h-full object-cover">
+                </a>
+                <div class="p-4 flex-1 flex flex-col justify-between">
+                    <h4 class="font-bold text-slate-800 text-xs line-clamp-2 hover:text-blue-600">
+                        <a href="/blog/{{ rp.slug }}">{{ rp.title }}</a>
+                    </h4>
+                    <span class="text-[11px] text-slate-400 mt-2 block">{{ rp.published_at[:10] }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</article>
+{% endblock %}

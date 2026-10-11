@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-white border-b border-slate-100 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+            <a href="/" class="hover:text-blue-600">صفحه اصلی</a>
+            <span>/</span>
+            <span class="text-slate-800 font-semibold">وبلاگ و مقالات</span>
+            {% if selected_category %}
+            <span>/</span>
+            <span class="text-blue-600 font-semibold">{{ selected_category }}</span>
+            {% endif %}
+        </nav>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">وبلاگ، اخبار و مقالات تخصصی</h1>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        <!-- Sidebar -->
+        <aside class="space-y-6">
+            <!-- Search in Blog -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                <h3 class="font-bold text-slate-900 text-sm mb-3 border-r-4 border-blue-600 pr-2">جستجو در مقالات</h3>
+                <form action="/blog" method="get">
+                    <div class="relative">
+                        <input type="text" name="q" value="{{ search_query or '' }}" placeholder="کلمه کلیدی..." 
+                               class="w-full pr-10 pl-3 py-2 rounded-xl border border-slate-200 text-sm bg-slate-50 focus:border-blue-600">
+                        <button type="submit" class="absolute right-3 top-2.5 text-slate-400">
+                            <i data-lucide="search" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Categories -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                <h3 class="font-bold text-slate-900 text-sm mb-3 border-r-4 border-blue-600 pr-2">موضوعات و دسته‌ها</h3>
+                <ul class="space-y-1.5 text-sm">
+                    <li>
+                        <a href="/blog" class="block py-1.5 px-2 rounded-lg {% if not selected_category %}bg-blue-50 text-blue-700 font-bold{% else %}text-slate-600 hover:bg-slate-50{% endif %}">
+                            همه مقالات
+                        </a>
+                    </li>
+                    {% for cat in categories_list %}
+                    <li>
+                        <a href="/blog?category={{ cat }}" class="block py-1.5 px-2 rounded-lg {% if selected_category == cat %}bg-blue-50 text-blue-700 font-bold{% else %}text-slate-600 hover:bg-slate-50{% endif %}">
+                            {{ cat }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Posts Grid -->
+        <div class="lg:col-span-3">
+            {% if posts|length == 0 %}
+            <div class="text-center py-16 bg-white rounded-2xl border border-slate-200 p-8">
+                <i data-lucide="file-text" class="w-16 h-16 text-slate-300 mx-auto mb-4 stroke-1"></i>
+                <h3 class="text-base font-bold text-slate-700">هیچ مقاله‌ای یافت نشد</h3>
+                <p class="text-xs text-slate-500 mt-1">لطفاً فیلترهای دیگر را امتحان کنید.</p>
+                <a href="/blog" class="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold">مشاهده همه مقالات</a>
+            </div>
+            {% else %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {% for post in posts %}
+                <article class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden hover:shadow-lg transition-all flex flex-col group">
+                    <a href="/blog/{{ post.slug }}" class="block aspect-video overflow-hidden">
+                        <img src="{{ post.featured_image or 'https://images.unsplash.com/photo-1456735190829-80ab873514a9?w=600' }}" 
+                             alt="{{ post.title }}"
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    </a>
+                    <div class="p-5 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+                                <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-bold">{{ post.category }}</span>
+                                <span>•</span>
+                                <span>{{ post.published_at[:10] }}</span>
+                            </div>
+                            <h2 class="font-bold text-slate-800 text-base leading-snug hover:text-blue-600 transition-colors">
+                                <a href="/blog/{{ post.slug }}">{{ post.title }}</a>
+                            </h2>
+                            <p class="text-xs text-slate-500 mt-2 line-clamp-3 leading-relaxed">
+                                {{ post.excerpt }}
+                            </p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                            <span class="text-slate-400">نویسنده: {{ post.author_name }}</span>
+                            <a href="/blog/{{ post.slug }}" class="font-bold text-blue-600 hover:underline flex items-center gap-1">
+                                مطالعه مقاله
+                                <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

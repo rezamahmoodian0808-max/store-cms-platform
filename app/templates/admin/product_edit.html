@@ -1,0 +1,322 @@
+{% extends "admin/base.html" %}
+
+{% block admin_content %}
+<div class="max-w-5xl mx-auto space-y-6"
+     x-data="{
+        hasPriority: {{ 1 if product and product.has_priority_system else 0 }},
+        hasColors: {{ 1 if product and product.has_color_variants else 0 }},
+        colorVariants: {{ product.color_variants|tojson if product and product.color_variants else '[]' }},
+        
+        addColorVariant() {
+            this.colorVariants.push({
+                id: Date.now().toString(),
+                name: 'رنگ جدید',
+                hex: '#2563eb',
+                image: '',
+                price: '',
+                sku: '',
+                stock: 10
+            });
+        },
+        removeColorVariant(index) {
+            this.colorVariants.splice(index, 1);
+        }
+     }">
+    
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-xl font-bold text-slate-900">
+                {{ 'ویرایش محصول: ' + product.title if product else 'افزودن محصول جدید' }}
+            </h2>
+            <p class="text-xs text-slate-500 mt-1">تنظیم فیلدهای پایه، سیستم اولویت انتخابی و سیستم واریانت‌های رنگی</p>
+        </div>
+        <a href="/admin/products" class="text-xs font-bold text-slate-500 hover:text-slate-800">
+            ← بازگشت به لیست محصولات
+        </a>
+    </div>
+
+    <form action="/admin/products/save" method="post" class="space-y-8" @submit="$refs.colorJsonInput.value = JSON.stringify(colorVariants)">
+        {% if product %}
+        <input type="hidden" name="product_id" value="{{ product.id }}">
+        {% endif %}
+        <input type="hidden" name="color_variants_json" x-ref="colorJsonInput">
+
+        <!-- 1. Basic Product Info Card -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-8 shadow-sm space-y-6">
+            <h3 class="text-sm font-bold text-slate-900 border-r-4 border-blue-600 pr-2">اطلاعات پایه محصول</h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">عنوان کامل محصول *</label>
+                    <input type="text" name="title" required value="{{ product.title if product else '' }}" 
+                           placeholder="مثال: پنتر تراش handy ps-104 رنگ فانتزی"
+                           class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-100 bg-slate-50">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">اسلاگ URL (انگلیسی یا فارسی) *</label>
+                    <input type="text" name="slug" required value="{{ product.slug if product else '' }}" 
+                           placeholder="panter-sharpener-handy-ps-104"
+                           class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-100 bg-slate-50" dir="ltr">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">کد شناسه کالا (SKU)</label>
+                    <input type="text" name="sku" value="{{ product.sku if product else '' }}" placeholder="PNT-104"
+                           class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-blue-600 bg-slate-50" dir="ltr">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">دسته‌بندی</label>
+                    <select name="category_id" class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-blue-600 bg-slate-50">
+                        <option value="">-- انتخاب دسته‌بندی --</option>
+                        {% for c in all_categories %}
+                        <option value="{{ c.id }}" {% if product and product.category_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">موجودی انبار</label>
+                    <input type="number" name="stock_quantity" value="{{ product.stock_quantity if product else 20 }}"
+                           class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-blue-600 bg-slate-50">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">قیمت فروش (تومان) *</label>
+                    <input type="number" step="any" name="price" required value="{{ product.price if product else 36000 }}"
+                           class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-blue-600 bg-slate-50 font-bold text-blue-600">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">قیمت خط خورده / قبل از تخفیف (اختیاری)</label>
+                    <input type="number" step="any" name="compare_at_price" value="{{ product.compare_at_price if product and product.compare_at_price else '' }}" placeholder="42000"
+                           class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-blue-600 bg-slate-50">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">آدرس تصویر شاخص (URL یا آپلود)</label>
+                    <input type="text" name="featured_image" value="{{ product.featured_image if product else '' }}" 
+                           placeholder="https://... یا /static/uploads/..."
+                           class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-blue-600 bg-slate-50" dir="ltr">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">تصاویر گالری (JSON لیستی از URLها)</label>
+                    <input type="text" name="gallery_images" value="{{ product.gallery_images|tojson if product and product.gallery_images else '[]' }}" 
+                           placeholder='["https://...", "https://..."]'
+                           class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-blue-600 bg-slate-50" dir="ltr">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1.5">توضیح کوتاه</label>
+                <textarea name="short_description" rows="2" placeholder="چکیده کوتاه ویژگی‌ها..."
+                          class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-blue-600 bg-slate-50">{{ product.short_description if product else '' }}</textarea>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1.5">توضیحات و نقد و بررسی تفصیلی (HTML/متن)</label>
+                <textarea name="description" rows="5" placeholder="شرح کامل مشخصات، کاربردها و جزییات کالا..."
+                          class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-blue-600 bg-slate-50">{{ product.description if product else '' }}</textarea>
+            </div>
+
+            <div class="flex flex-wrap gap-6 pt-2">
+                <label class="inline-flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700">
+                    <input type="checkbox" name="is_published" value="1" {% if not product or product.is_published %}checked{% endif %} class="w-4 h-4 rounded text-blue-600">
+                    <span>انتشار عمومی در فروشگاه</span>
+                </label>
+                <label class="inline-flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700">
+                    <input type="checkbox" name="is_featured" value="1" {% if product and product.is_featured %}checked{% endif %} class="w-4 h-4 rounded text-blue-600">
+                    <span>محصول ویژه (نمایش در صفحه اول)</span>
+                </label>
+                <label class="inline-flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700">
+                    <input type="checkbox" name="is_in_stock" value="1" {% if not product or product.is_in_stock %}checked{% endif %} class="w-4 h-4 rounded text-blue-600">
+                    <span>وضعیت موجود در انبار</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- 2. MODULAR FEATURE A: PRIORITY / ORDERING SYSTEM (Neveshtafzar Moadel style) -->
+        <!-- ========================================================================= -->
+        <div class="bg-white rounded-2xl border border-amber-200 p-6 sm:p-8 shadow-sm space-y-6">
+            <div class="flex items-center justify-between border-b border-amber-100 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                        <i data-lucide="list-ordered" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900">قابلیت الف: سیستم تعیین اولویت سفارش (Priority System)</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">مشابه سایت نوشت‌افزار معدل؛ خریدار اولویت اول و دوم انتخاب می‌کند.</p>
+                    </div>
+                </div>
+
+                <!-- Toggle Switch -->
+                <label class="inline-flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="has_priority_system" value="1" 
+                           x-model="hasPriority" 
+                           {% if product and product.has_priority_system %}checked{% endif %}
+                           class="w-5 h-5 rounded text-amber-600 focus:ring-amber-500">
+                    <span class="text-xs font-bold" :class="hasPriority ? 'text-amber-800' : 'text-slate-400'">
+                        <span x-text="hasPriority ? 'فعال برای این محصول' : 'غیرفعال'"></span>
+                    </span>
+                </label>
+            </div>
+
+            <!-- Priority Settings Fields (Only shown if enabled) -->
+            <div x-show="hasPriority" x-transition class="space-y-4 pt-2">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">عنوان فیلد اولویت اول</label>
+                        <input type="text" name="priority_label_1" 
+                               value="{{ product.priority_label_1 if product and product.priority_label_1 else 'انتخاب اولویت اول:' }}"
+                               class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">عنوان فیلد اولویت دوم</label>
+                        <input type="text" name="priority_label_2" 
+                               value="{{ product.priority_label_2 if product and product.priority_label_2 else 'انتخاب اولویت دوم:' }}"
+                               class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                        گزینه‌های انتخابی برای اولویت‌ها (هر گزینه در یک سطر)
+                    </label>
+                    <textarea name="priority_options_raw" rows="4" placeholder="آبی&#10;مشکی&#10;سبز&#10;زرد&#10;طوسی"
+                              class="w-full p-3 rounded-xl border border-slate-200 text-xs bg-slate-50 leading-relaxed font-sans">{{ product.priority_options|join('\n') if product and product.priority_options else 'آبی\nمشکی\nسبز\nزرد\nطوسی' }}</textarea>
+                    <p class="text-[11px] text-slate-500 mt-1">گزینه‌های فوق در هر دو دراپ‌دان اولویت ۱ و ۲ نمایش می‌یابند و سیستم هوشمند انتخاب تکراری را ناممکن می‌سازد.</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">متن راهنمای خریدار</label>
+                    <input type="text" name="priority_helper_text" 
+                           value="{{ product.priority_helper_text if product and product.priority_helper_text else 'در صورت موجود نبودن رنگ‌های دلخواه شما، پشتیبانی برای هماهنگی با شما تماس خواهد گرفت.' }}"
+                           class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50">
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- 3. MODULAR FEATURE B: COLOR VARIANT SYSTEM (Ariapen Persia style)          -->
+        <!-- ========================================================================= -->
+        <div class="bg-white rounded-2xl border border-blue-200 p-6 sm:p-8 shadow-sm space-y-6">
+            <div class="flex items-center justify-between border-b border-blue-100 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center">
+                        <i data-lucide="palette" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900">قابلیت ب: سیستم پالت و واریانت رنگی (Color Swatches)</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">مشابه ماژیک پرشیا در آریاپن؛ سواچ‌های دایره‌ای با امکان تغییر عکس، قیمت و کد کالا.</p>
+                    </div>
+                </div>
+
+                <!-- Toggle Switch -->
+                <label class="inline-flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="has_color_variants" value="1" 
+                           x-model="hasColors"
+                           {% if product and product.has_color_variants %}checked{% endif %}
+                           class="w-5 h-5 rounded text-blue-600 focus:ring-blue-500">
+                    <span class="text-xs font-bold" :class="hasColors ? 'text-blue-800' : 'text-slate-400'">
+                        <span x-text="hasColors ? 'فعال برای این محصول' : 'غیرفعال'"></span>
+                    </span>
+                </label>
+            </div>
+
+            <!-- Color Swatches Table (Only shown if enabled) -->
+            <div x-show="hasColors" x-transition class="space-y-4 pt-2">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold text-slate-700">لیست رنگ‌ها و مشخصات متغیرها:</span>
+                    <button type="button" @click="addColorVariant()" 
+                            class="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 font-bold text-xs hover:bg-blue-100 transition-colors flex items-center gap-1">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        افزودن رنگ جدید
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                    <table class="w-full text-right text-xs">
+                        <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
+                            <tr>
+                                <th class="p-2.5 font-bold">پیش‌نمایش رنگ</th>
+                                <th class="p-2.5 font-bold">کد هگز</th>
+                                <th class="p-2.5 font-bold">نام رنگ</th>
+                                <th class="p-2.5 font-bold">قیمت اختصاصی</th>
+                                <th class="p-2.5 font-bold">کد SKU</th>
+                                <th class="p-2.5 font-bold">موجودی</th>
+                                <th class="p-2.5 font-bold text-center">حذف</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <template x-for="(v, index) in colorVariants" :key="v.id">
+                                <tr class="hover:bg-slate-50/50">
+                                    <td class="p-2.5">
+                                        <div class="flex items-center gap-2">
+                                            <input type="color" x-model="v.hex" class="w-7 h-7 rounded border border-slate-300 p-0 cursor-pointer">
+                                        </div>
+                                    </td>
+                                    <td class="p-2.5">
+                                        <input type="text" x-model="v.hex" class="w-20 p-1.5 rounded border border-slate-200 text-xs font-mono" dir="ltr">
+                                    </td>
+                                    <td class="p-2.5">
+                                        <input type="text" x-model="v.name" placeholder="آبی" class="w-28 p-1.5 rounded border border-slate-200 text-xs font-bold">
+                                    </td>
+                                    <td class="p-2.5">
+                                        <input type="number" x-model="v.price" placeholder="خالی=قیمت اصلی" class="w-24 p-1.5 rounded border border-slate-200 text-xs">
+                                    </td>
+                                    <td class="p-2.5">
+                                        <input type="text" x-model="v.sku" placeholder="MRK-BLU" class="w-24 p-1.5 rounded border border-slate-200 text-xs font-mono" dir="ltr">
+                                    </td>
+                                    <td class="p-2.5">
+                                        <input type="number" x-model="v.stock" class="w-16 p-1.5 rounded border border-slate-200 text-xs">
+                                    </td>
+                                    <td class="p-2.5 text-center">
+                                        <button type="button" @click="removeColorVariant(index)" class="text-rose-600 hover:text-rose-800 p-1">
+                                            <i data-lucide="x" class="w-4 h-4"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. SEO Metadata Card -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-8 shadow-sm space-y-4">
+            <h3 class="text-sm font-bold text-slate-900 border-r-4 border-blue-600 pr-2">تنظیمات بهینه‌سازی سئو (SEO)</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">عنوان سئو (Meta Title)</label>
+                    <input type="text" name="meta_title" value="{{ product.meta_title if product else '' }}" 
+                           placeholder="پنتر تراش handy ps-104 | خرید با بهترین قیمت"
+                           class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">توضیحات متای سئو (Meta Description)</label>
+                    <input type="text" name="meta_description" value="{{ product.meta_description if product else '' }}" 
+                           placeholder="بررسی، مشخصات فنی و خرید آنلاین پنتر تراش فانتزی با انتخاب رنگ و اولویت ارسال"
+                           class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50">
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Submit Bar -->
+        <div class="flex items-center justify-between pt-4">
+            <a href="/admin/products" class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50">
+                انصراف
+            </a>
+            <button type="submit" class="px-8 py-3 rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 shadow-lg shadow-blue-500/25 transition-all flex items-center gap-2">
+                <i data-lucide="check" class="w-4 h-4"></i>
+                <span>ذخیره نهایی محصول</span>
+            </button>
+        </div>
+
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-white border-b border-slate-100 py-6">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6">
+        <nav class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+            <a href="/" class="hover:text-blue-600">صفحه اصلی</a>
+            <span>/</span>
+            <span class="text-slate-800 font-semibold truncate">{{ page.title }}</span>
+        </nav>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
+            {{ page.title }}
+        </h1>
+    </div>
+</div>
+
+<main class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+    <div class="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/80 shadow-sm space-y-6">
+        
+        {% if page.excerpt %}
+        <div class="p-4 rounded-2xl bg-blue-50/60 border border-blue-100 text-sm text-blue-900 font-medium leading-relaxed">
+            {{ page.excerpt }}
+        </div>
+        {% endif %}
+
+        <div class="prose max-w-none text-slate-700 leading-loose text-base">
+            {{ page.body_content|safe }}
+        </div>
+
+    </div>
+</main>
+{% endblock %}

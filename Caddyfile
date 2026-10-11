@@ -1,0 +1,25 @@
+# Caddyfile - Automated Zero-Configuration Free Let's Encrypt SSL Reverse Proxy
+# Replace 'yourdomain.com' with your actual domain name.
+# Caddy will automatically issue, verify, and renew free Let's Encrypt / ZeroSSL certificates!
+
+yourdomain.com, www.yourdomain.com {
+    # Automatic HTTPS redirection, modern TLS 1.3, and HSTS headers are enabled by default
+    encode gzip zstd
+
+    # Security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    # Reverse proxy to the FastAPI Python application running on port 8000
+    reverse_proxy 127.0.0.1:8000 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto https
+    }
+}

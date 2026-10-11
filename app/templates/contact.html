@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-white border-b border-slate-100 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+            <a href="/" class="hover:text-blue-600">صفحه اصلی</a>
+            <span>/</span>
+            <span class="text-slate-800 font-semibold">تماس با ما</span>
+        </nav>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">ارتباط با پشتیبانی و امور مشتریان</h1>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    
+    {% if message_sent %}
+    <div class="mb-8 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-3">
+        <i data-lucide="check-circle" class="w-6 h-6 text-emerald-600 flex-shrink-0"></i>
+        <div>
+            <h4 class="font-bold text-sm">پیام شما با موفقیت دریافت گردید!</h4>
+            <p class="text-xs text-emerald-700 mt-0.5">کارشناسان بخش پشتیبانی در اسرع وقت از طریق ایمیل یا تماس تلفنی با شما ارتباط برقرار خواهند نمود.</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        
+        <!-- Contact Form (7 cols) -->
+        <div class="lg:col-span-7 bg-white p-5 sm:p-8 lg:p-10 rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-sm">
+            <h2 class="text-xl font-bold text-slate-900 mb-2">فرم ارسال پیام و درخواست سفارش</h2>
+            <p class="text-xs text-slate-500 mb-6">جهت استعلام قیمت عمده، سفارشات سازمانی یا هرگونه پرسش، اطلاعات زیر را وارد نمایید.</p>
+
+            <form action="/contact/submit" method="post" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">نام و نام خانوادگی *</label>
+                        <input type="text" name="full_name" required placeholder="مثال: علی احمدی"
+                               class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-100 bg-slate-50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">شماره تماس / موبایل</label>
+                        <input type="tel" name="phone" placeholder="مثال: 09121234567"
+                               class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-100 bg-slate-50">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">آدرس ایمیل *</label>
+                        <input type="email" name="email" required placeholder="name@example.com"
+                               class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-100 bg-slate-50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">موضوع پیام</label>
+                        <input type="text" name="subject" placeholder="مثال: استعلام خرید عمده مدارس"
+                               class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-100 bg-slate-50">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">متن پیام یا توضیحات سفارش *</label>
+                    <textarea name="message" rows="5" required placeholder="شرح سوال یا سفارش خود را بنویسید..."
+                              class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-100 bg-slate-50"></textarea>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 px-6 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                    <span>ارسال پیام به واحد پشتیبانی</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Contact Info Cards (5 cols) -->
+        <div class="lg:col-span-5 space-y-6">
+            
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="phone" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-900 text-sm">شماره تماس دفتر مرکزی</h4>
+                    <p class="text-xs text-slate-500 mt-1">شنبه تا چهارشنبه، ۹ الی ۱۷</p>
+                    <a href="tel:{{ settings.phone }}" class="text-blue-600 font-extrabold text-sm mt-1 block font-mono" dir="ltr">{{ settings.phone }}</a>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="mail" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-900 text-sm">پست الکترونیکی</h4>
+                    <p class="text-xs text-slate-500 mt-1">پاسخگویی سریع ایمیل‌ها</p>
+                    <a href="mailto:{{ settings.email }}" class="text-blue-600 font-bold text-sm mt-1 block font-mono" dir="ltr">{{ settings.email }}</a>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="map-pin" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-900 text-sm">آدرس دفتر و انبار</h4>
+                    <p class="text-xs text-slate-600 mt-1 leading-relaxed">{{ settings.address }}</p>
+                </div>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-slate-900 text-slate-300 text-xs leading-relaxed space-y-2">
+                <span class="font-bold text-white text-sm block">💡 خرید عمده و فاکتور رسمی</span>
+                <p>تمامی فاکتورهای صادره این مجموعه برای شرکت‌ها و موسسات همراه با شناسه ملی و گواهی ارزش افزوده رسمی صادر می‌گردد.</p>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}
