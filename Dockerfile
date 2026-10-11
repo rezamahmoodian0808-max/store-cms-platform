@@ -4,7 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     APP_ENV=production \
     HOST=0.0.0.0 \
-    PORT=8000
+    PORT=7860
 
 WORKDIR /app
 
@@ -21,9 +21,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project files
 COPY . .
 
-# Seed and initialize database if needed
-RUN python seed.py
+# Seed database and ensure full write permissions for SQLite & uploads
+RUN python seed.py && chmod -R 777 /app
 
-EXPOSE 8000
+EXPOSE 7860
 
 CMD ["python", "run.py"]

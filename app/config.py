@@ -13,7 +13,18 @@ class Settings:
     PORT: int = int(os.getenv("PORT", "8000"))
     SITE_URL: str = os.getenv("SITE_URL", "http://localhost:8000").rstrip("/")
     SECRET_KEY: str = os.getenv("SECRET_KEY", "prod-secret-key-antigravity-secure-seed-983141")
-    DATABASE_PATH: str = str(BASE_DIR / os.getenv("DATABASE_PATH", "app.db"))
+    
+    # Support serverless read-write environments (Vercel / Lambda)
+    _default_db = BASE_DIR / os.getenv("DATABASE_PATH", "app.db")
+    if os.getenv("VERCEL") and Path("/tmp").exists():
+        import shutil
+        _tmp_db = Path("/tmp/app.db")
+        if not _tmp_db.exists() and _default_db.exists():
+            shutil.copy2(_default_db, _tmp_db)
+        DATABASE_PATH: str = str(_tmp_db)
+    else:
+        DATABASE_PATH: str = str(_default_db)
+
     FORCE_HTTPS: bool = os.getenv("FORCE_HTTPS", "false").lower() in ("true", "1", "yes")
 
     ADMIN_EMAIL: str = os.getenv("ADMIN_EMAIL", "admin@example.com")

@@ -1,3 +1,13 @@
+---
+title: Store CMS Platform
+emoji: 🛒
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # Modern E-Commerce & Business CMS Platform
 ### سامانه جامع وب‌سایت کسب‌وکار و فروشگاه آنلاین با سیستم مدیریت محتوا (CMS)
 
