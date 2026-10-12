@@ -56,7 +56,7 @@ app.add_middleware(GZipMiddleware, minimum_size=500)
 app.add_middleware(SecurityAndPerformanceMiddleware)
 
 # Mount static files
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.mount("/static", StaticFiles(directory=settings.STATIC_DIR), name="static")
 
 # Register Routers
 app.include_router(storefront.router)
@@ -66,7 +66,7 @@ app.include_router(admin.router)
 app.include_router(api.router)
 
 # Jinja2 Templates optimized configuration
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory=settings.TEMPLATES_DIR)
 templates.env.auto_reload = settings.DEBUG
 templates.env.trim_blocks = True
 templates.env.lstrip_blocks = True

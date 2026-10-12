@@ -3,9 +3,10 @@ from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from app.database import get_db
 from app.helpers import get_site_context
+from app.config import settings
 
 router = APIRouter()
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory=settings.TEMPLATES_DIR)
 
 @router.get("/page/{slug}")
 def view_page(request: Request, slug: str):

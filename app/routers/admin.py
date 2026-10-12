@@ -16,8 +16,10 @@ from app.auth import (
 )
 from app.helpers import get_site_context, parse_json_field, invalidate_navigation_cache
 
+from app.config import settings
+
 router = APIRouter(prefix="/admin")
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory=settings.TEMPLATES_DIR)
 
 # ==================== AUTHENTICATION ====================
 

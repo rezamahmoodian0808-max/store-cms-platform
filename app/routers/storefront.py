@@ -4,9 +4,10 @@ from fastapi import APIRouter, Request, HTTPException
 from fastapi.templating import Jinja2Templates
 from app.database import get_db
 from app.helpers import get_site_context, parse_json_field
+from app.config import settings
 
 router = APIRouter()
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory=settings.TEMPLATES_DIR)
 
 @router.get("/")
 def home(request: Request):

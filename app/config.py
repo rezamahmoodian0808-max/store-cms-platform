@@ -32,6 +32,8 @@ class Settings:
     ADMIN_NAME: str = os.getenv("ADMIN_NAME", "Site Administrator")
 
     UPLOAD_DIR: Path = BASE_DIR / "app" / "static" / "uploads"
+    STATIC_DIR: str = str(BASE_DIR / "app" / "static")
+    TEMPLATES_DIR: str = str(BASE_DIR / "app" / "templates")
 
 settings = Settings()
 settings.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
