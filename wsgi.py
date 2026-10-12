@@ -9,6 +9,9 @@ if str(ROOT_DIR) not in sys.path:
 
 os.chdir(str(ROOT_DIR))
 
+from app.database import init_db
+init_db()
+
 from app.main import app
 from a2wsgi import ASGIMiddleware
 
