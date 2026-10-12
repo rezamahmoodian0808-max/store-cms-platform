@@ -1,0 +1,9 @@
+.git
+__pycache__
+*.pyc
+.pytest_cache
+*.exe
+tunnel.log
+tunnel_err.log
+upload_to_github.py
+upload_to_hf.py
